@@ -99,7 +99,7 @@ export default class List {
         current.prev = node
       }
     } else {
-      // do nothing
+      // do nth
     }
   }
 
@@ -113,9 +113,120 @@ export default class List {
     return result
   }
 
-  // delete
-  // traverse
-  // find
-  // update
-  // concatenate
+  delete(element) {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+
+    let current = this.#head
+    while (current && current.element !== element) {
+      current = current.next
+    }
+
+    if (current) {
+      if (current.next) {
+        current.next.prev = current.prev
+      }
+      if (current.prev) {
+        current.prev.next = current.next
+      }
+      current.element = current.prev = current.next = null
+    } else {
+      // do nth
+    }
+  }
+
+  deleteLast() {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+
+    let current = this.#head
+
+    // if the list has only one item
+    if (current.next === null) {
+      this.#head = null
+    } else {
+      // traverse to last element
+      while (current && current.next !== null) {
+        current = current.next
+      }
+
+      if (current) {
+        current.prev.next = null
+        current.element = current.prev = current.next = null
+      }
+    }
+  }
+
+  deleteFirst() {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+    let current = this.#head
+    if (current.next === null) {
+      this.#head = null
+    } else {
+      this.#head = current.next
+      current.element = current.prev = current.next = null
+    }
+  }
+
+  clear() {
+    this.#head = null
+  }
+
+  getFirst() {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+    return this.#head.element
+  }
+
+  getLast() {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+    let current = this.#head
+    while (current && current.next !== null) {
+      current = current.next
+    }
+    return current.element
+  }
+
+  get(element) {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+
+    let current = this.#head
+    while (current && current.element !== element) {
+      current = current.next
+    }
+    if (current) {
+      return current.element
+    }
+  }
+
+  update(currElement, newElement) {
+    // if the list is empty do nth
+    if (this.#head === null) {
+      return
+    }
+
+    let current = this.#head
+    while (current && current.element !== currElement) {
+      current = current.next
+    }
+
+    if (current) {
+      current.element = newElement
+    }
+  }
 }
