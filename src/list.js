@@ -1,18 +1,32 @@
 import Node from './node'
 
+/**
+ * Represents a linked list.
+ */
 export default class List {
   #head
 
+  /**
+   * Constructs an empty linked list.
+   */
   constructor() {
     this.#head = null
   }
 
+  /**
+   * Inserts an element at the beginning of the list.
+   * @param {*} element - The element to be inserted.
+   */
   insertAtBeginning(element) {
     const node = new Node(element)
     node.next = this.#head
     this.#head = node
   }
 
+  /**
+   * Inserts an element at the end of the list.
+   * @param {*} element - The element to be inserted.
+   */
   insertAtEnd(element) {
     const node = new Node(element)
 
@@ -30,6 +44,11 @@ export default class List {
     node.prev = current
   }
 
+  /**
+   * Inserts an element after a specified element.
+   * @param {*} prevElement - The element after which the new element should be inserted.
+   * @param {*} element - The element to be inserted.
+   */
   insertAfter(prevElement, element) {
     if (!prevElement) {
       throw new Error('A previous element must be passed')
@@ -67,6 +86,11 @@ export default class List {
     }
   }
 
+  /**
+   * Inserts an element before a specified element.
+   * @param {*} nextElement - The element before which the new element should be inserted.
+   * @param {*} element - The element to be inserted.
+   */
   insertBefore(nextElement, element) {
     if (!nextElement) {
       throw new Error('A next element must be passed')
@@ -103,6 +127,10 @@ export default class List {
     }
   }
 
+  /**
+   * Displays the elements of the list.
+   * @returns {Array} - An array containing the elements of the list.
+   */
   display() {
     let current = this.#head
     const result = []
@@ -113,6 +141,10 @@ export default class List {
     return result
   }
 
+  /**
+   * Deletes a specified element from the list.
+   * @param {*} element - The element to be deleted.
+   */
   delete(element) {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -137,6 +169,9 @@ export default class List {
     }
   }
 
+  /**
+   * Deletes the last element from the list.
+   */
   deleteLast() {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -161,6 +196,9 @@ export default class List {
     }
   }
 
+  /**
+   * Deletes the first element from the list.
+   */
   deleteFirst() {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -175,10 +213,17 @@ export default class List {
     }
   }
 
+  /**
+   * Clears all elements from the list.
+   */
   clear() {
     this.#head = null
   }
 
+  /**
+   * Gets the first element of the list.
+   * @returns {*} - The first element of the list.
+   */
   getFirst() {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -187,6 +232,10 @@ export default class List {
     return this.#head.element
   }
 
+  /**
+   * Gets the last element of the list.
+   * @returns {*} - The last element of the list.
+   */
   getLast() {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -199,6 +248,11 @@ export default class List {
     return current.element
   }
 
+  /**
+   * Gets an element from the list.
+   * @param {*} element - The element to retrieve.
+   * @returns {*} - The specified element.
+   */
   get(element) {
     // if the list is empty do nth
     if (this.#head === null) {
@@ -214,6 +268,11 @@ export default class List {
     }
   }
 
+  /**
+   * Updates an element in the list.
+   * @param {*} currElement - The element to be updated.
+   * @param {*} newElement - The new value for the element.
+   */
   update(currElement, newElement) {
     // if the list is empty do nth
     if (this.#head === null) {
