@@ -19,10 +19,37 @@ describe('List', () => {
 
   test('insertAfter', () => {
     const list = new List()
+
     list.insertAtEnd(1)
     list.insertAtEnd(3)
     list.insertAfter(1, 2)
     expect(list.display()).toEqual([1, 2, 3])
+
+    list.clear()
+    list.insertAtEnd(1)
+    list.insertAtEnd(2)
+    list.insertAfter(2, 3)
+    expect(list.display()).toEqual([1, 2, 3])
+
+    list.clear()
+    list.insertAtEnd(1)
+    list.insertAtEnd(2)
+    list.insertAtEnd(4)
+    list.insertAfter(2, 3)
+    expect(list.display()).toEqual([1, 2, 3, 4])
+  })
+
+  test('insertAfter on empty list', () => {
+    const list = new List()
+    list.insertAfter(1, 2)
+    expect(list.display()).toEqual([])
+  })
+
+  test('insertAfter to throw error', () => {
+    const list = new List()
+    list.insertAtEnd(1)
+    list.insertAtEnd(3)
+    expect(list.insertAfter).toThrow()
   })
 
   test('insertBefore', () => {
@@ -31,6 +58,31 @@ describe('List', () => {
     list.insertAtEnd(2)
     list.insertBefore(2, 3)
     expect(list.display()).toEqual([1, 3, 2])
+
+    list.clear()
+    list.insertAtEnd(2)
+    list.insertBefore(2, 1)
+    expect(list.display()).toEqual([1, 2])
+
+    list.clear()
+    list.insertAtEnd(1)
+    list.insertAtEnd(2)
+    list.insertAtEnd(4)
+    list.insertBefore(2, 3)
+    expect(list.display()).toEqual([1, 3, 2, 4])
+  })
+
+  test('insertAfter on empty list', () => {
+    const list = new List()
+    list.insertBefore(1, 2)
+    expect(list.display()).toEqual([])
+  })
+
+  test('insertBefore to throw error', () => {
+    const list = new List()
+    list.insertAtEnd(1)
+    list.insertAtEnd(2)
+    expect(list.insertBefore).toThrow()
   })
 
   test('delete', () => {
@@ -40,6 +92,27 @@ describe('List', () => {
     list.insertAtEnd(3)
     list.delete(2)
     expect(list.display()).toEqual([1, 3])
+
+    list.clear()
+    list.insertAtEnd(1)
+    list.insertAtEnd(2)
+    list.insertAtEnd(3)
+    list.delete(3)
+
+    expect(list.display()).toEqual([1, 2])
+  })
+
+  test('delete empty list', () => {
+    const list = new List()
+    list.delete(2)
+    expect(list.display()).toEqual([])
+  })
+
+  test('delete when list has only one element', () => {
+    const list = new List()
+    list.insertAtEnd(2)
+    list.delete(2)
+    expect(list.display()).toEqual([])
   })
 
   test('deleteLast', () => {
@@ -138,7 +211,9 @@ describe('List', () => {
     list.insertAtEnd(1)
     list.insertAtEnd(2)
     list.insertAtEnd(3)
+    expect(list.get(1)).toBe(1)
     expect(list.get(2)).toBe(2)
+    expect(list.get(3)).toBe(3)
   })
 
   test('get on empty list', () => {
@@ -160,9 +235,11 @@ describe('List', () => {
     list.insertAtEnd(2)
     list.insertAtEnd(3)
 
+    list.update(1, 1.5)
     list.update(2, 2.5)
+    list.update(3, 3.5)
 
-    expect(list.display()).toEqual([1, 2.5, 3])
+    expect(list.display()).toEqual([1.5, 2.5, 3.5])
   })
 
   test('update on empty list', () => {
