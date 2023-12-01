@@ -1,75 +1,116 @@
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nyankom</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
-      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
-      crossorigin="anonymous"
-    />
-    <link rel="shortcut icon" href="./assets/favicon.ico" type="image/x-icon" />
-    <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Nyankom</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css"
+            integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="shortcut icon"
+            href="./assets/favicon.ico"
+            type="image/x-icon"
+        />
+        <link rel="icon" href="./assets/favicon.ico" type="image/x-icon" />
+    </head>
 
-  <script type="module">
-    import { createApp } from 'https://unpkg.com/petite-vue?module'
-    // import { List } from './src/list.js'
+    <script type="module">
+        import { createApp } from 'https://unpkg.com/petite-vue?module'
+        import List from './src/list.js'
 
-    const API = 'https://api.thecatapi.com/v1/images/search?limit=10'
-    createApp({
-      images: [], // change this into a linked list
-      async fetchCatImages() {
-        try {
-          const response = await fetch(API)
-          const data = await response.json()
-          this.images = data?.map((cat, index) => ({
-            id: cat.id,
-            url: cat.url,
-          }))
-        } catch (error) {
-          console.log('Error fetching cat images:', error)
-        }
-      },
-    }).mount('#app')
-  </script>
+        const PAGE_OFFSET = 10
+        const API = 'https://api.thecatapi.com/v1/images/search?limit='
+        createApp({
+            currentPageItems: new Array(PAGE_OFFSET),
+            pagesList: new List(),
+            pageNumber: 0,
+            async fetchImages(limit = PAGE_OFFSET) {
+                let data = {}
+                let error = null
+                try {
+                    const response = await fetch(`${API}${limit}`)
+                    const resp = await response.json()
+                    data = resp?.map((cat, index) => ({
+                        id: cat.id,
+                        url: cat.url,
+                    }))
+                } catch (err) {
+                    error = err
+                    console.log('Error fetching cat images:', err)
+                }
+                return { error, data }
+            },
+            async insertNextPageAt(index) {
+                const { data, error } = await this.fetchImages()
+                if (!error) {
+                    this.pagesList.insertAt(data, index)
+                }
 
-  <body>
-    <div id="app">
-      <div class="container">
-        <div class="row images-container" v-scope v-effect="fetchCatImages()">
-          <img
-            v-for="(item, index) in images"
-            :key="item.id"
-            :src="item.url"
-            class="img-thumbnail"
-          />
+                return this.pagesList.getAt(index)
+            },
+            async goToNextPage() {
+                this.pageNumber++
+                let nextPageItems = this.pagesList.getAt(this.pageNumber)
+                if (!nextPageItems) {
+                    nextPageItems = await this.insertNextPageAt(this.pageNumber)
+                }
+                this.currentPageItems = nextPageItems
+            },
+            goToPrevPage() {
+                if (this.pageNumber > 0) {
+                    this.pageNumber--
+                }
+
+                this.currentPageItems = this.pagesList.getAt(this.pageNumber)
+            },
+            async mounted() {
+                this.currentPageItems = await this.insertNextPageAt(0)
+            },
+        }).mount('#app')
+    </script>
+
+    <body>
+        <div id="app">
+            <div class="container" v-scope @vue:mounted="mounted">
+                <p>{{ pageNumber }}</p>
+                <button @click="goToNextPage">Next</button>
+                <button @click="goToPrevPage">Previous</button>
+
+                <div class="row images-container">
+                    <img
+                        v-for="(item, index) in currentPageItems"
+                        :key="item?.id"
+                        :src="item?.url"
+                        class="img-thumbnail"
+                    />
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </body>
+    </body>
 
-  <style>
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-    .images-container {
-      display: flex;
-      flex-direction: row;
-      overflow-x: scroll;
-      overflow-y: hidden;
-    }
+        .images-container {
+            display: flex;
+            flex-direction: row;
+            overflow-x: scroll;
+            overflow-y: hidden;
+        }
 
-    .img-thumbnail {
-      width: 320px;
-      height: 320px;
-      object-fit: cover;
-    }
-  </style>
+        .img-thumbnail {
+            width: 320px;
+            height: 320px;
+            object-fit: cover;
+        }
+    </style>
 </html>
