@@ -1,18 +1,29 @@
-import Node from './node'
+import Node from './node.js'
 
 /**
  * Represents a linked list.
  */
 export default class List {
-    #head
-    #tail
+    _head
+    _tail
+    _size
     /**
      * Constructs an empty linked list.
      */
     constructor() {
-        this.#head = null
-        this.#tail = null
-        // refactor code
+        this._head = null
+        this._tail = null
+        this._size = 0
+    }
+
+    _decrementSize() {
+        if (this._size > 0) {
+            this._size -= 1
+        }
+    }
+
+    _incrementSize() {
+        this._size += 1
     }
 
     /**
@@ -21,11 +32,12 @@ export default class List {
      */
     insertAtBeginning(element) {
         const node = new Node(element)
-        node.next = this.#head
-        this.#head = node
+        node.next = this._head
+        this._head = node
         if (node.next === null) {
-            this.#tail = node
+            this._tail = node
         }
+        this._incrementSize()
     }
 
     /**
@@ -35,15 +47,17 @@ export default class List {
     insertAtEnd(element) {
         const node = new Node(element)
 
-        if (this.#head === null) {
-            this.#head = this.#tail = node
+        if (this._head === null) {
+            this._incrementSize()
+            this._head = this._tail = node
             return
         }
 
-        let last = this.#tail
+        let last = this._tail
         last.next = node
         node.prev = last
-        this.#tail = node
+        this._tail = node
+        this._incrementSize()
     }
 
     /**
@@ -53,24 +67,26 @@ export default class List {
      */
     insertAfter(prevElement, element) {
         if (!prevElement) {
-            throw new Error('A previous element must be passed')
+            throw new Error('A previous element must be provided')
         }
 
         const node = new Node(element)
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
-        let last = this.#tail
+        let last = this._tail
 
         if (last && last.element === prevElement) {
             last.next = node
             node.prev = last
-            this.#tail = node
+            this._tail = node
+
+            this._incrementSize()
             return
         }
 
-        let current = this.#head
+        let current = this._head
 
         while (
             current &&
@@ -84,6 +100,8 @@ export default class List {
         node.next = current.next
         current.next.prev = node
         current.next = node
+
+        this._incrementSize()
     }
 
     /**
@@ -93,23 +111,24 @@ export default class List {
      */
     insertBefore(nextElement, element) {
         if (!nextElement) {
-            throw new Error('A next element must be passed')
+            throw new Error('A next element must be provided')
         }
         const node = new Node(element)
 
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
         // If the found next element is the last element
-        let last = this.#tail
-        let current = this.#head
+        let last = this._tail
+        let current = this._head
 
         if (last?.prev?.next && last.element === nextElement) {
             node.prev = last.prev
             node.next = last
             last.prev.next = node
             last.prev = node
+            this._incrementSize()
             return
         }
 
@@ -125,13 +144,102 @@ export default class List {
         if (current.prev === null) {
             node.next = current
             current.prev = node
-            this.#head = node
+            this._head = node
         } else {
             node.prev = current.prev
             node.next = current
             current.prev.next = node
             current.prev = node
         }
+
+        this._incrementSize()
+    }
+
+    /**
+     * Inserts an element at a specified index in the list.
+     * @param {*} element - The element to be inserted.
+     * @param {number} index - The index at which the element should be inserted.
+     */
+    insertAt(element, index) {
+        if (index < 0) {
+            throw new Error('Index must be a non-negative integer')
+        }
+
+        const node = new Node(element)
+
+        if (index === 0) {
+            // Insert at the beginning
+            node.next = this._head
+            this._head = node
+
+            if (!this._tail) {
+                // If the list was empty, update the tail
+                this._tail = node
+            }
+        } else {
+            let current = this._head
+            let count = 0
+
+            while (current && count < index - 1) {
+                current = current.next
+                count++
+            }
+
+            if (!current) {
+                throw new Error('Index out of bounds')
+            }
+
+            node.next = current.next
+            current.next = node
+
+            if (!node.next) {
+                // If inserted at the end, update the tail
+                this._tail = node
+            }
+        }
+        this._incrementSize()
+    }
+
+    /**
+     * Deletes an element at a specified index in the list.
+     * @param {number} index - The index at which the element should be deleted.
+     */
+    deleteAt(index) {
+        if (index < 0) {
+            throw new Error('Index must be a non-negative integer')
+        }
+
+        if (index === 0) {
+            // Delete at the beginning
+            if (this._head) {
+                this._head = this._head.next
+
+                if (!this._head) {
+                    // If the list becomes empty, update the tail
+                    this._tail = null
+                }
+            }
+        } else {
+            let current = this._head
+            let count = 0
+
+            while (current && count < index - 1) {
+                current = current.next
+                count++
+            }
+
+            if (!current || !current.next) {
+                throw new Error('Index out of bounds')
+            }
+
+            current.next = current.next.next
+
+            if (!current.next) {
+                // If deleted at the end, update the tail
+                this._tail = current
+            }
+        }
+        this._decrementSize()
     }
 
     /**
@@ -139,7 +247,7 @@ export default class List {
      * @returns {Array} - An array containing the elements of the list.
      */
     display() {
-        let current = this.#head
+        let current = this._head
         const result = []
         while (current !== null) {
             result.push(current.element)
@@ -154,13 +262,13 @@ export default class List {
      */
     delete(element) {
         // if the list is empty do nth
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
         // if there is only one element in the list
-        let current = this.#head
-        let last = this.#tail
+        let current = this._head
+        let last = this._tail
         if (current === last) {
             this.clear()
             return
@@ -169,8 +277,9 @@ export default class List {
         // if the requested element is the last one
         if (last && last.element === element) {
             last.prev.next = null
-            this.#tail = last.prev
+            this._tail = last.prev
             last.prev = last.next = last.element = null
+            this._decrementSize()
             return
         }
 
@@ -187,6 +296,7 @@ export default class List {
         }
 
         current.element = current.prev = current.next = null
+        this._decrementSize()
     }
 
     /**
@@ -194,20 +304,21 @@ export default class List {
      */
     deleteLast() {
         // if the list is empty do nth
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
         // if the list has only one item
-        let current = this.#head
-        let last = this.#tail
+        let current = this._head
+        let last = this._tail
         if (current === last) {
             this.clear()
         } else {
-            this.#tail = last.prev
+            this._tail = last.prev
             last.prev.next = null
             last.element = last.prev = last.next = null
         }
+        this._decrementSize()
     }
 
     /**
@@ -215,24 +326,26 @@ export default class List {
      */
     deleteFirst() {
         // if the list is empty do nth
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
-        let current = this.#head
+        let current = this._head
         if (current.next === null) {
-            this.#head = null
+            this._head = null
         } else {
-            this.#head = current.next
+            this._head = current.next
             current.element = current.prev = current.next = null
         }
+        this._decrementSize()
     }
 
     /**
      * Clears all elements from the list.
      */
     clear() {
-        this.#head = null
-        this.#tail = null
+        this._head = null
+        this._tail = null
+        this._size = 0
     }
 
     /**
@@ -241,10 +354,10 @@ export default class List {
      */
     getFirst() {
         // if the list is empty do nth
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
-        return this.#head.element
+        return this._head.element
     }
 
     /**
@@ -252,11 +365,11 @@ export default class List {
      * @returns {*} - The last element of the list.
      */
     getLast() {
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
-        let last = this.#tail
+        let last = this._tail
         return last.element
     }
 
@@ -266,12 +379,12 @@ export default class List {
      * @returns {*} - The specified element.
      */
     get(element) {
-        if (this.#head === null) {
+        if (this._head === null) {
             return
         }
 
-        let last = this.#tail
-        let current = this.#head
+        let last = this._tail
+        let current = this._head
 
         if (last.element === element) {
             return last.element
@@ -286,17 +399,52 @@ export default class List {
     }
 
     /**
+     * Gets an element at a specified index in the list.
+     * @param {number} index - The index at which the element should be retrieved.
+     * @returns {*} - The specified element.
+     */
+    getAt(index) {
+        if (index < 0) {
+            throw new Error('Index must be a non-negative integer')
+        }
+
+        if (index === 0) {
+            if (this._head) {
+                return this._head.element
+            }
+        } else {
+            let current = this._head
+            let count = 0
+
+            while (current && count < index) {
+                current = current.next
+                count++
+            }
+
+            if (!current) {
+                return null
+            }
+
+            return current.element
+        }
+    }
+
+    /**
      * Updates an element in the list.
      * @param {*} currElement - The element to be updated.
      * @param {*} newElement - The new value for the element.
      */
     update(currElement, newElement) {
-        if (this.#head === null) {
+        if (!newElement) {
+            throw new Error('A new element value must be provided')
+        }
+
+        if (this._head === null) {
             return
         }
 
-        let current = this.#head
-        let last = this.#tail
+        let current = this._head
+        let last = this._tail
 
         if (last.element === currElement) {
             last.element = newElement
@@ -310,5 +458,13 @@ export default class List {
         if (current) {
             current.element = newElement
         }
+    }
+
+    /**
+     * Gets total size of the list.
+     * @returns {Number} - The number of nodes in the list.
+     */
+    get size() {
+        return this._size
     }
 }

@@ -2,9 +2,9 @@
  * Represents a node in a linked list.
  */
 export default class Node {
-    #prev
-    #next
-    #element
+    _prev
+    _next
+    _element
 
     /**
      * Create a new Node.
@@ -16,21 +16,21 @@ export default class Node {
          * @type {*}
          * @private
          */
-        this.#element = element
+        this._element = element
 
         /**
          * Reference to the previous node in the linked list.
          * @type {Node}
          * @private
          */
-        this.#prev = null
+        this._prev = null
 
         /**
          * Reference to the next node in the linked list.
          * @type {Node}
          * @private
          */
-        this.#next = null
+        this._next = null
     }
 
     /**
@@ -38,7 +38,7 @@ export default class Node {
      * @param {Node} prevNode - The previous node.
      */
     set prev(prevNode) {
-        this.#prev = prevNode
+        this._prev = prevNode
     }
 
     /**
@@ -46,7 +46,7 @@ export default class Node {
      * @returns {Node} The previous node.
      */
     get prev() {
-        return this.#prev
+        return this._prev
     }
 
     /**
@@ -54,7 +54,7 @@ export default class Node {
      * @param {Node} nextNode - The next node.
      */
     set next(nextNode) {
-        this.#next = nextNode
+        this._next = nextNode
     }
 
     /**
@@ -62,7 +62,7 @@ export default class Node {
      * @returns {Node} The next node.
      */
     get next() {
-        return this.#next
+        return this._next
     }
 
     /**
@@ -70,7 +70,7 @@ export default class Node {
      * @returns {*} The data stored in the node.
      */
     get element() {
-        return this.#element
+        return this._element
     }
 
     /**
@@ -78,6 +78,6 @@ export default class Node {
      * @param {*} element - The data to be stored in the node.
      */
     set element(element) {
-        this.#element = element || null
+        this._element = element || null
     }
 }
