@@ -4,7 +4,7 @@
 This project showcases a simple image carousel featuring pictures of cats, leveraging the Petite Vue.js library. The carousel employs a linked list data structure to create a paginator for an array of 10 items, demonstrating the practical usage of linked lists in real-life applications.
 
 ### Technologies Used
-Petite Vue.js: A lightweight Vue.js library that is loaded directly from a CDN.
+[Petite Vue.js](https://github.com/vuejs/petite-vue): A lightweight Vue.js library that is loaded directly from a CDN.
 
 ### How to Run the Project
 To run this project, follow these steps:
