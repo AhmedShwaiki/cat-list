@@ -1,12 +1,12 @@
-import Node from './node.js'
+import Node from './node'
 
 /**
  * Represents a linked list.
  */
-export default class List {
-    _head
-    _tail
-    _size
+export default class List<T> {
+    private _head: Node<T> | null
+    private _tail: Node<T> | null
+    private _size: number
     /**
      * Constructs an empty linked list.
      */
@@ -30,7 +30,7 @@ export default class List {
      * Inserts an element at the beginning of the list.
      * @param {*} element - The element to be inserted.
      */
-    insertAtBeginning(element) {
+    insertAtBeginning(element: T) {
         const node = new Node(element)
         node.next = this._head
         this._head = node
@@ -44,7 +44,7 @@ export default class List {
      * Inserts an element at the end of the list.
      * @param {*} element - The element to be inserted.
      */
-    insertAtEnd(element) {
+    insertAtEnd(element: T) {
         const node = new Node(element)
 
         if (this._head === null) {
@@ -53,8 +53,10 @@ export default class List {
             return
         }
 
-        let last = this._tail
-        last.next = node
+        const last = this._tail
+        if (last) {
+            last.next = node
+        }
         node.prev = last
         this._tail = node
         this._incrementSize()
@@ -65,17 +67,13 @@ export default class List {
      * @param {*} prevElement - The element after which the new element should be inserted.
      * @param {*} element - The element to be inserted.
      */
-    insertAfter(prevElement, element) {
-        if (!prevElement) {
-            throw new Error('A previous element must be provided')
-        }
-
+    insertAfter(prevElement: T, element: T) {
         const node = new Node(element)
         if (this._head === null) {
             return
         }
 
-        let last = this._tail
+        const last = this._tail
 
         if (last && last.element === prevElement) {
             last.next = node
@@ -98,7 +96,9 @@ export default class List {
 
         node.prev = current
         node.next = current.next
-        current.next.prev = node
+        if (current.next) {
+            current.next.prev = node
+        }
         current.next = node
 
         this._incrementSize()
@@ -109,10 +109,7 @@ export default class List {
      * @param {*} nextElement - The element before which the new element should be inserted.
      * @param {*} element - The element to be inserted.
      */
-    insertBefore(nextElement, element) {
-        if (!nextElement) {
-            throw new Error('A next element must be provided')
-        }
+    insertBefore(nextElement: T, element: T) {
         const node = new Node(element)
 
         if (this._head === null) {
@@ -120,7 +117,7 @@ export default class List {
         }
 
         // If the found next element is the last element
-        let last = this._tail
+        const last = this._tail
         let current = this._head
 
         if (last?.prev?.next && last.element === nextElement) {
@@ -160,7 +157,7 @@ export default class List {
      * @param {*} element - The element to be inserted.
      * @param {number} index - The index at which the element should be inserted.
      */
-    insertAt(element, index) {
+    insertAt(element: T, index: number) {
         if (index < 0) {
             throw new Error('Index must be a non-negative integer')
         }
@@ -204,7 +201,7 @@ export default class List {
      * Deletes an element at a specified index in the list.
      * @param {number} index - The index at which the element should be deleted.
      */
-    deleteAt(index) {
+    deleteAt(index: number) {
         if (index < 0) {
             throw new Error('Index must be a non-negative integer')
         }
@@ -246,7 +243,7 @@ export default class List {
      * Displays the elements of the list.
      * @returns {Array} - An array containing the elements of the list.
      */
-    display() {
+    display(): Array<T | null> {
         let current = this._head
         const result = []
         while (current !== null) {
@@ -260,15 +257,16 @@ export default class List {
      * Deletes a specified element from the list.
      * @param {*} element - The element to be deleted.
      */
-    delete(element) {
+    delete(element: T) {
+        let current = this._head
+
         // if the list is empty do nth
-        if (this._head === null) {
+        if (current === null) {
             return
         }
 
         // if there is only one element in the list
-        let current = this._head
-        let last = this._tail
+        const last = this._tail
         if (current === last) {
             this.clear()
             return
@@ -276,7 +274,9 @@ export default class List {
 
         // if the requested element is the last one
         if (last && last.element === element) {
-            last.prev.next = null
+            if (last.prev) {
+                last.prev.next = null
+            }
             this._tail = last.prev
             last.prev = last.next = last.element = null
             this._decrementSize()
@@ -294,8 +294,9 @@ export default class List {
         if (current?.prev?.next) {
             current.prev.next = current.next
         }
-
-        current.element = current.prev = current.next = null
+        if (current?.element) {
+            current.element = current.prev = current.next = null
+        }
         this._decrementSize()
     }
 
@@ -303,19 +304,22 @@ export default class List {
      * Deletes the last element from the list.
      */
     deleteLast() {
+        const current = this._head
+        const last = this._tail
+
         // if the list is empty do nth
-        if (this._head === null) {
+        if (current === null || last === null) {
             return
         }
 
         // if the list has only one item
-        let current = this._head
-        let last = this._tail
         if (current === last) {
             this.clear()
         } else {
             this._tail = last.prev
-            last.prev.next = null
+            if (last.prev) {
+                last.prev.next = null
+            }
             last.element = last.prev = last.next = null
         }
         this._decrementSize()
@@ -329,7 +333,7 @@ export default class List {
         if (this._head === null) {
             return
         }
-        let current = this._head
+        const current = this._head
         if (current.next === null) {
             this._head = null
         } else {
@@ -365,11 +369,11 @@ export default class List {
      * @returns {*} - The last element of the list.
      */
     getLast() {
-        if (this._head === null) {
+        const last = this._tail
+        if (this._head === null || last === null) {
             return
         }
 
-        let last = this._tail
         return last.element
     }
 
@@ -378,13 +382,13 @@ export default class List {
      * @param {*} element - The element to retrieve.
      * @returns {*} - The specified element.
      */
-    get(element) {
-        if (this._head === null) {
+    get(element: T) {
+        const last = this._tail
+        let current = this._head
+
+        if (current === null || last === null) {
             return
         }
-
-        let last = this._tail
-        let current = this._head
 
         if (last.element === element) {
             return last.element
@@ -403,7 +407,7 @@ export default class List {
      * @param {number} index - The index at which the element should be retrieved.
      * @returns {*} - The specified element.
      */
-    getAt(index) {
+    getAt(index: number) {
         if (index < 0) {
             throw new Error('Index must be a non-negative integer')
         }
@@ -434,17 +438,17 @@ export default class List {
      * @param {*} currElement - The element to be updated.
      * @param {*} newElement - The new value for the element.
      */
-    update(currElement, newElement) {
+    update(currElement: T, newElement: T) {
         if (!newElement) {
             throw new Error('A new element value must be provided')
         }
 
-        if (this._head === null) {
+        let current = this._head
+        const last = this._tail
+
+        if (current === null || last === null) {
             return
         }
-
-        let current = this._head
-        let last = this._tail
 
         if (last.element === currElement) {
             last.element = newElement

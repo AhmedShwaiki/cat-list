@@ -1,6 +1,9 @@
 module.exports = {
-  testEnvironment: 'node',
-  transform: {
-    '\\.[jt]sx?$': 'babel-jest',
-  },
+    preset: 'ts-jest',
+    testEnvironment: 'node',
+    testRegex: 'tests/.*\\.ts$',
+    moduleFileExtensions: ['ts', 'js'],
+    moduleNameMapper: {
+        '^@/(.*)$': '<rootDir>/src/$1',
+    },
 }

@@ -1,16 +1,16 @@
 /**
  * Represents a node in a linked list.
  */
-export default class Node {
-    _prev
-    _next
-    _element
+export default class Node<T> {
+    private _prev: Node<T> | null
+    private _next: Node<T> | null
+    private _element: T | null
 
     /**
      * Create a new Node.
      * @param {*} element - The data to be stored in the node.
      */
-    constructor(element = null) {
+    constructor(element: T | null = null) {
         /**
          * The data stored in the node.
          * @type {*}
@@ -37,7 +37,7 @@ export default class Node {
      * Set the previous node in the linked list.
      * @param {Node} prevNode - The previous node.
      */
-    set prev(prevNode) {
+    set prev(prevNode: Node<T> | null) {
         this._prev = prevNode
     }
 
@@ -45,7 +45,7 @@ export default class Node {
      * Get the previous node in the linked list.
      * @returns {Node} The previous node.
      */
-    get prev() {
+    get prev(): Node<T> | null {
         return this._prev
     }
 
@@ -53,7 +53,7 @@ export default class Node {
      * Set the next node in the linked list.
      * @param {Node} nextNode - The next node.
      */
-    set next(nextNode) {
+    set next(nextNode: Node<T> | null) {
         this._next = nextNode
     }
 
@@ -61,7 +61,7 @@ export default class Node {
      * Get the next node in the linked list.
      * @returns {Node} The next node.
      */
-    get next() {
+    get next(): Node<T> | null {
         return this._next
     }
 
@@ -69,7 +69,7 @@ export default class Node {
      * Get the data stored in the node.
      * @returns {*} The data stored in the node.
      */
-    get element() {
+    get element(): T | null {
         return this._element
     }
 
@@ -77,7 +77,7 @@ export default class Node {
      * Set the data stored in the node.
      * @param {*} element - The data to be stored in the node.
      */
-    set element(element) {
+    set element(element: T | null) {
         this._element = element || null
     }
 }

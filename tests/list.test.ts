@@ -48,15 +48,6 @@ describe('List', () => {
             expect(list.display()).toEqual([])
             expect(list.size).toEqual(0)
         })
-
-        test('insertAfter to throw error', () => {
-            const list = new List()
-            list.insertAtEnd(1)
-            list.insertAtEnd(3)
-            expect(() => list.insertAfter()).toThrow(
-                'A previous element must be provided',
-            )
-        })
     })
 
     describe('insertBefore method', () => {
@@ -84,15 +75,6 @@ describe('List', () => {
             const list = new List()
             list.insertBefore(1, 2)
             expect(list.display()).toEqual([])
-        })
-
-        test('insertBefore to throw error', () => {
-            const list = new List()
-            list.insertAtEnd(1)
-            list.insertAtEnd(2)
-            expect(() => list.insertBefore()).toThrow(
-                'A next element must be provided',
-            )
         })
     })
     test('delete', () => {
@@ -403,6 +385,13 @@ describe('List', () => {
             list.insertAt('B', 1)
             const result = list.getAt(1)
             expect(result).toBe('B')
+        })
+
+        test('should return null if out-of-bounds index', () => {
+            const list = new List()
+            list.insertAt('A', 0)
+            const result = list.getAt(1)
+            expect(result).toBe(null)
         })
 
         test('should throw an error for a negative index', () => {
